@@ -47,5 +47,5 @@ spec:
   selector:
     app: catalog
   ports:
-    - port: 80
+    - port: 8005
       targetPort: 80
