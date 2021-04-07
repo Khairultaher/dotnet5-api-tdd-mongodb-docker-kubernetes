@@ -26,11 +26,15 @@ namespace Catalog.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            if (env.IsDevelopment())
+            {
+                IsDevelopment = true;
+            }
         }
-
+        public bool IsDevelopment { get; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,7 +42,17 @@ namespace Catalog.Api
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-            var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+
+            IMongoDbSettings mongoDbSettings;
+            if (IsDevelopment)
+            {
+                mongoDbSettings = Configuration.GetSection(nameof(MongoDbDevSettings)).Get<MongoDbDevSettings>();
+            }
+            else
+            {
+                mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+            }
+                
 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
