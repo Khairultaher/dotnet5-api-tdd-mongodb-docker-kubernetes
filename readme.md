@@ -15,7 +15,7 @@ docker ps (to check mongo is running)
 docker stop name_of_container (if it is already running) 
 docker run -d --rm --name mongo -p 27018:27017 -v mongodbdata:/data/db -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=admin --network=catalog-net mongo
 4. Run tagged image & Create container: 
-docker run --rm -p 8080:80 -e MongoDbSettings:Host=mongo -e MongoDbSettings:Password=admin --network=catalog-net khairul100/catalog:v1 .
+docker run -d --rm --name catalog  -p 8080:80 -e MongoDbSettings:Host=mongo -e MongoDbSettings:Password=admin --network=catalog-net khairul100/catalog:v1 .
 5. Check images and containers
 docker images
 docker ps
@@ -40,12 +40,27 @@ kubectl apply -f catalog.yaml
 kubectl get deployments
 kubectl get pods
 kubectl logs created_pod_name_here
-6. Create & configure database(mongodb) deployment yaml file(mongodb.yaml)
+6. Create & configure database(mongodb) deployment yaml file(mongodb.yaml) 
 7. Deploy database & check staus(from directory here the yaml file is available)
 kubectl apply -f mongodb.yaml
 kubectl get statefulsets
 kubectl get pods or kubectl get pods -w
+8. Expose mongodb pod to acess from outside like mongo compus:
+kubectl expose pod mongodb-statefulset-0 --type=NodePort
 ```
+### Skaffold Setup to deploy & publish auto
+
+```
+1. Install from here: 
+https://skaffold.dev/docs/install/ 
+OR
+Installl Chocolatey then install skaffold using powershell: 
+choco install -y skaffold
+2. Create & Configure skaffold.yaml file
+3. Run command from root directory
+skaffold dev
+```
+
 ### Clean up all pods, services & secrets
 ```
 kubectl delete deployment catalog-deployment
