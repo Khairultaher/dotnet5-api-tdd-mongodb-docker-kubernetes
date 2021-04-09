@@ -1,4 +1,4 @@
-## Build + Publish ==> Deployment ==> Service Config
+## Build + Publish ==> Service Config ==> Deployment
 ### Build image and run in docker
 ```
 0. Configure docker file (Dockerfile)
