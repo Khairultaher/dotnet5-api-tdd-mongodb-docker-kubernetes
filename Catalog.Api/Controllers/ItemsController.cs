@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Catalog.Api.Dtos;
+using Catalog.Api.Dtos.Item;
 using Catalog.Api.Entities;
 using Catalog.Api.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -35,6 +36,21 @@ namespace Catalog.Api.Controllers
             return items;
         }
 
+        [HttpGet]
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(string name = null)
+        {
+            var items = (await repository.GetItemsAsync())
+             .Select(item => item.AsDto());
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                items = items.Where(w => w.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
+            logger.LogInformation($"{DateTime.UtcNow.ToString("hh:mm:ss")}: Retrieved {items.Count()} items");
+
+            return items;
+        }
+
         // GET /items/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDto>> GetItemAsync(Guid id)
@@ -57,6 +73,7 @@ namespace Catalog.Api.Controllers
             {
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
+                Description = itemDto.Description,
                 Price = itemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow
             };
@@ -77,13 +94,15 @@ namespace Catalog.Api.Controllers
                 return NotFound();
             }
 
-            Item updatedItem = existingItem with
-            {
-                Name = itemDto.Name,
-                Price = itemDto.Price
-            };
+            existingItem.Name = itemDto.Name;
+            existingItem.Price = itemDto.Price;
+            //Item updatedItem = existingItem with
+            //{
+            //    Name = itemDto.Name,
+            //    Price = itemDto.Price
+            //};
 
-            await repository.UpdateItemAsync(updatedItem);
+            await repository.UpdateItemAsync(existingItem);
 
             return NoContent();
         }
