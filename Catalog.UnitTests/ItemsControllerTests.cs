@@ -23,7 +23,7 @@ namespace Catalog.UnitTests
         private readonly Random rand = new();
 
         [Fact]
-        public void UnitOfWork_StateUserTest_ExpectedBehavior()
+        public void UnitOfWork_StateUnderTest_ExpectedBehavior()
         {
             // Arrange
 
